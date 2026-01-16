@@ -1,0 +1,14 @@
+# apiVersion: networking.istio.io/v1alpha3
+# kind: DestinationRule
+# metadata:
+#   name: {{ .Release.Name }}-testui-destinationrule
+#   namespace: {{.Values.namespace}}
+# spec:
+#   host: {{ .Release.Name }}-testui-service.{{.Values.namespace}}.svc.cluster.local  #service-name.namespace.svc.cluster.local 
+#   subsets:
+#     - name: gpmd-form-subset
+#       labels: #selector
+#         version: {{ .Values.testui.label.version }} #find pod with label "stage"
+#     - name: canary-form-subset
+#       labels:
+#         version: {{ .Values.testui.label.version }}-canary

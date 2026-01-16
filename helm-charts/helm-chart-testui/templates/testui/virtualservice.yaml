@@ -1,0 +1,58 @@
+# apiVersion: networking.istio.io/v1alpha3
+# kind: VirtualService
+# metadata:
+#   name: {{ .Release.Name }}-testui-virtualservice
+#   namespace: {{.Values.namespace}}
+# spec:
+#   hosts:
+#     - {{.Values.host}} # copy the value in the gateway hosts
+#   gateways:
+#     - istio-gpmd-gateway/istio-gpmd-gateway    # gateway name preceded by namespace
+#   http: 
+#   - match: 
+#     - headers: 
+#         canary: # any value like key value pair. - "canary" is a key. 
+#           exact: "true" # when its "true" it will pick the below destination. 
+#     route: 
+#     - destination: 
+#         host: {{ .Release.Name }}-testui-service.{{.Values.namespace}}.svc.cluster.local    #service-name.namespace.svc.cluster.local 
+#         subset: canary-form-subset
+#     corsPolicy:
+#         allowMethods:
+#           - POST
+#           - OPTIONS
+#           - GET
+#           - PUT
+#           - PATCH
+#           - DELETE
+#         allowOrigins:
+#           - exact: "http://localhost:4200"
+#         allowHeaders:
+#           - authorization
+#           - content-type
+#           - Keep-Alive
+#           - X-CustomHeader
+#           - canary
+#   - route: 
+#     - destination: 
+#         host: {{ .Release.Name }}-testui-service.{{.Values.namespace}}.svc.cluster.local    #service-name.namespace.svc.cluster.local 
+#         subset: gpmd-form-subset
+#     corsPolicy:
+#         allowMethods:
+#           - POST
+#           - OPTIONS
+#           - GET
+#           - PUT
+#           - PATCH
+#           - DELETE
+#         allowOrigins:
+#           - exact: "http://localhost:4200"         
+#         allowHeaders:
+#           - authorization
+#           - User-Agent
+#           - X-Requested-With
+#           - X-Client-Identifier
+#           - If-Modified-Since
+#           - Cache-Control
+#           - X-CustomHeader
+#           - content-type

@@ -1,0 +1,22 @@
+environment: production
+namespace: testui
+corsAllowedOrigins: 
+host: 
+
+apphost: k8s
+
+testui:
+  label:
+    name: testui
+    version: stage
+
+  container:
+    name: testui
+    pullPolicy: Always
+    image:  <any-image>
+    port: 4200
+  replicas: 1
+
+  service:
+    port: 4200
+    type: NodePort

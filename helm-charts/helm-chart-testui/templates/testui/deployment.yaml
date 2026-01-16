@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-testui-deployment  
+  namespace: {{.Values.namespace}}
+  labels:
+    app: {{ .Values.testui.label.name }}
+spec:
+  replicas: {{ .Values.testui.replicas }}
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.testui.label.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.testui.label.name }}
+        environment: {{ .Values.environment }}
+        version: {{ .Values.testui.label.version }}
+    spec:
+      tolerations:
+        - key: "app"
+          operator: "Equal"
+          value: "run"
+          effect: "NoExecute"
+      containers:
+        - name: {{ .Values.testui.container.name }}
+          image: {{ .Values.testui.container.image }}:{{ .Values.testui.container.tag }}
+          imagePullPolicy: {{ .Values.testui.container.pullPolicy }}
+          resources:
+            requests:
+              memory: "200Mi"
+              cpu: ".2"
+            limits:
+              memory: "400Mi"
+              cpu: ".5"
+          ports:
+            - containerPort: {{ .Values.testui.container.port }}
+          env:
+		      {{- range $key, $value := .Values.testui.container.env }}  
+          {{- end }}
+          envFrom:
+            - secretRef: 
+                name: testui-secret
+          livenessProbe:
+            timeoutSeconds: 10
+            failureThreshold: 1  
+            httpGet:
+              path: /health/liveness
+              port: {{ .Values.testui.container.port }}     
+            initialDelaySeconds: 5
+            periodSeconds: 300
+          readinessProbe:
+            timeoutSeconds: 5
+            successThreshold: 3
+            failureThreshold: 10
+            httpGet:
+              path: /health/readiness
+              port: {{ .Values.testui.container.port }} 
+            initialDelaySeconds: 5
+            periodSeconds: 300
